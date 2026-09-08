@@ -4,16 +4,16 @@ Use `search-docs` for authoritative documentation on subscriptions.
 
 ## Status Checks
 
-| Method | Returns true when |
-|---|---|
-| `$user->subscribed('default')` | Active or on grace period |
-| `->onTrial()` | Trial period active |
-| `->onGracePeriod()` | Canceled, period not yet ended |
-| `->canceled()` | `ends_at` is set, may still have access |
-| `->ended()` | Canceled and grace period expired |
-| `->incomplete()` | Awaiting SCA/3DS confirmation |
-| `->pastDue()` | Payment overdue |
-| `->recurring()` | Active and not on trial |
+| Method                         | Returns true when                       |
+| ------------------------------ | --------------------------------------- |
+| `$user->subscribed('default')` | Active or on grace period               |
+| `->onTrial()`                  | Trial period active                     |
+| `->onGracePeriod()`            | Canceled, period not yet ended          |
+| `->canceled()`                 | `ends_at` is set, may still have access |
+| `->ended()`                    | Canceled and grace period expired       |
+| `->incomplete()`               | Awaiting SCA/3DS confirmation           |
+| `->pastDue()`                  | Payment overdue                         |
+| `->recurring()`                | Active and not on trial                 |
 
 Check by product or price:
 

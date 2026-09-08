@@ -2,10 +2,7 @@
     "mcpServers": {
         "laravel-boost": {
             "command": "/Users/gavin/Library/Application Support/Herd/bin/php84",
-            "args": [
-                "/Users/gavin/Herd/saas-boilerplate/artisan",
-                "boost:mcp"
-            ]
+            "args": ["/Users/gavin/Herd/saas-boilerplate/artisan", "boost:mcp"]
         }
     }
 }
