@@ -280,3 +280,7 @@ Not present despite the PRD: `app/Domain`, Flowbite (the UI kit is shadcn-vue on
 Before building one of these, ask whether it follows the PRD's target architecture or the current flat structure. Don't silently introduce `app/Domain/` or swap the UI kit.
 
 `AGENTS.md` is kept identical to this file. Boost regenerates the `<laravel-boost-guidelines>` block, so project guidance stays below it.
+
+## Further AI workflow reference
+
+[LaravelDaily/AI-Workflows-For-Laravel](https://github.com/LaravelDaily/AI-Workflows-For-Laravel) collects reusable Claude Code skills and workflow prompts for common Laravel tasks (new project setup, etc.). Worth checking before hand-rolling a skill for a Laravel-specific task this project doesn't already cover.
