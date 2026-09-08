@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
@@ -210,3 +214,69 @@ Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
 </laravel-boost-guidelines>
+
+---
+
+# Project: SaaS Boilerplate
+
+## What this is
+
+A reusable Laravel SaaS starting point, grown from `laravel/vue-starter-kit`. Laravel 13, PHP 8.4, Inertia v3 + Vue 3 + TypeScript, Tailwind v4, Pest 5, Filament v5 admin at `/admin`. Auth is Fortify (email verification, 2FA, passkeys).
+
+There is a PRD describing a much larger target (organisations, entitlements, billing, Flowbite, MySQL, ULIDs). Most of it is not built. See "Don't assume" below.
+
+## How to work on it
+
+```bash
+composer dev            # serve + queue + logs + vite
+composer ci:check       # everything CI runs
+php artisan test --compact --filter=SomeTest
+vendor/bin/pint --dirty --format agent    # after any PHP change
+npm run check:fix       # lint + format (vite-plus, not ESLint/Prettier)
+```
+
+Herd serves the site at `https://saas-boilerplate.test`. Never run `artisan serve`.
+
+Verification gates: Pint, PHPStan (larastan level 7), `vue-tsc`, type-aware `vp check` with warnings as errors, and Pest. `composer ci:check` runs the lot.
+
+Never hand-edit generated code: `resources/js/{actions,routes,wayfinder}` (Wayfinder) and `resources/js/components/ui` (shadcn-vue). Frontend lint/format config lives in the `lint` and `fmt` keys of `vite.config.ts`.
+
+## Codebase map
+
+Flat Laravel layout under `app/`. No `app/Domain`.
+
+- `app/Actions/{Context}/` - one use case per class with a `handle()` method. See `app/Actions/Teams/CreateTeam.php`.
+- `app/Concerns/HasTeams.php` - the entire team API on `User`. Start here for anything tenancy-related.
+- `app/Data/` - hand-written DTOs for Inertia props. `spatie/laravel-data` is not installed.
+- `app/Http/Requests/{Context}/` - one FormRequest per write endpoint. Controllers validate, authorise, call an action, return Inertia.
+- Models carry `@property` docblocks and `#[Fillable]` attributes. PHPStan level 7 depends on the docblocks staying accurate.
+- `resources/js/app.ts:12` assigns layouts centrally by page-name prefix, not per page.
+- Frontend routes come from Wayfinder: `@/actions/...` for controllers, `@/routes/...` for named routes. Never hardcode a URL.
+
+## Tenancy
+
+The tenant is `Team`, not an organisation. `User -> Membership (team_members) -> Team`. Every user gets a personal team on registration.
+
+Tenant routes are prefixed with the team slug (`routes/web.php:10`). Three pieces hold that together:
+
+- `EnsureTeamMembership` resolves the slug, 403s non-members, syncs the user's current team. Takes an optional minimum role as a middleware parameter.
+- `SetTeamUrlDefaults` populates `URL::defaults()` so `route()` calls omit the slug.
+- `HandleInertiaRequests` shares `currentTeam` and `teams` to every page.
+
+Renaming a team regenerates its slug and changes its URLs (`app/Models/Team.php:44`).
+
+Authorisation goes through `TeamRole`/`TeamPermission` enums and `TeamPolicy`, via `$user->hasTeamPermission(...)`. `spatie/laravel-permission` is installed but wired to nothing, don't use it for team roles.
+
+## Testing
+
+Pest, `tests/Feature` mirrors the route groups and gets `RefreshDatabase` from `tests/Pest.php`. Tenant-scoped features need an isolation test (non-member gets 403), not just the happy path.
+
+## Don't assume
+
+Installed but unused in application code: Cashier (only `Cashier::calculateTaxes()`), Pennant, spatie permission, activitylog, medialibrary, Excel, flysystem-s3.
+
+Not present despite the PRD: `app/Domain`, Flowbite (the UI kit is shadcn-vue on reka-ui), MySQL (`.env.example` ships SQLite), ULIDs (integer keys, teams addressed by slug), Redis (database driver for queue/cache/session), entitlements, usage metering, Horizon, Pulse, Sentry, Socialite.
+
+Before building one of these, ask whether it follows the PRD's target architecture or the current flat structure. Don't silently introduce `app/Domain/` or swap the UI kit.
+
+`AGENTS.md` is kept identical to this file. Boost regenerates the `<laravel-boost-guidelines>` block, so project guidance stays below it.
