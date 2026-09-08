@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import {
     FwbButton,
     FwbTable,
@@ -10,9 +10,10 @@ import {
     FwbTableRow,
 } from 'flowbite-vue';
 import { computed, ref } from 'vue';
-import DeleteProductModal from '@/components/demonstration/DeleteProductModal.vue';
-import ProductFormModal from '@/components/demonstration/ProductFormModal.vue';
-import type { Product } from '@/types';
+import DeleteProductModal from '@/components/products/DeleteProductModal.vue';
+import ProductFormModal from '@/components/products/ProductFormModal.vue';
+import { index as productsIndex } from '@/routes/products';
+import type { Product, Team } from '@/types';
 
 const props = defineProps<{
     products: Product[];
@@ -20,6 +21,19 @@ const props = defineProps<{
 
 const page = usePage();
 const team = computed(() => page.props.currentTeam);
+
+defineOptions({
+    layout: (layoutProps: { currentTeam?: Team | null }) => ({
+        breadcrumbs: [
+            {
+                title: 'Products',
+                href: layoutProps.currentTeam
+                    ? productsIndex(layoutProps.currentTeam.slug)
+                    : '/',
+            },
+        ],
+    }),
+});
 
 const formModalOpen = ref(false);
 const deleteModalOpen = ref(false);
@@ -50,11 +64,10 @@ function formatPrice(cents: number): string {
 </script>
 
 <template>
-    <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
-                Products
-            </h1>
+    <Head title="Products" />
+
+    <div class="flex flex-1 flex-col gap-4 p-4">
+        <div class="flex items-center justify-end">
             <FwbButton @click="openCreateModal">New product</FwbButton>
         </div>
 

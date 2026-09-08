@@ -39,7 +39,7 @@ const mainNavItems = computed<NavItem[]>(() => [
         icon: LayoutGrid,
     },
     {
-        title: 'Products (Flowbite demo)',
+        title: 'Products',
         href: productsUrl.value,
         icon: Package,
     },

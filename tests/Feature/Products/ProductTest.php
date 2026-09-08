@@ -19,7 +19,7 @@ test('the products index page can be rendered', function () {
 
     $response->assertOk();
     $response->assertInertia(fn (Assert $page) => $page
-        ->component('demonstration/products/Index')
+        ->component('products/Index')
         ->has('products', 1)
         ->where('products.0.name', 'Existing Product'));
 });
