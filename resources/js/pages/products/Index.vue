@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import {
     FwbButton,
+    FwbPagination,
     FwbTable,
     FwbTableBody,
     FwbTableCell,
@@ -15,8 +16,16 @@ import ProductFormModal from '@/components/products/ProductFormModal.vue';
 import { index as productsIndex } from '@/routes/products';
 import type { Product, Team } from '@/types';
 
+interface PaginatedData {
+    data: Product[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
 const props = defineProps<{
-    products: Product[];
+    products: PaginatedData;
 }>();
 
 const page = usePage();
@@ -61,6 +70,12 @@ function formatPrice(cents: number): string {
         currency: 'USD',
     });
 }
+
+function goToPage(page: number) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', String(page));
+    router.visit(url.toString());
+}
 </script>
 
 <template>
@@ -71,7 +86,7 @@ function formatPrice(cents: number): string {
             <FwbButton @click="openCreateModal">New product</FwbButton>
         </div>
 
-        <FwbTable v-if="props.products.length > 0" hoverable>
+        <FwbTable v-if="props.products.data.length > 0" hoverable>
             <FwbTableHead>
                 <FwbTableHeadCell>Name</FwbTableHeadCell>
                 <FwbTableHeadCell>Description</FwbTableHeadCell>
@@ -83,7 +98,7 @@ function formatPrice(cents: number): string {
             </FwbTableHead>
             <FwbTableBody>
                 <FwbTableRow
-                    v-for="product in props.products"
+                    v-for="product in props.products.data"
                     :key="product.id"
                 >
                     <FwbTableCell
@@ -119,6 +134,17 @@ function formatPrice(cents: number): string {
                 </FwbTableRow>
             </FwbTableBody>
         </FwbTable>
+
+        <div
+            v-if="props.products.data.length > 0"
+            class="mt-6 flex justify-center"
+        >
+            <FwbPagination
+                :current-page="props.products.current_page"
+                :total-pages="props.products.last_page"
+                @page-change="goToPage"
+            />
+        </div>
 
         <p v-else class="text-sm text-gray-500 dark:text-gray-400">
             No products yet. Create your first one to get started.

@@ -21,7 +21,7 @@ class ProductController extends Controller
         Gate::authorize('viewAny', [Product::class, $current_team]);
 
         return Inertia::render('products/Index', [
-            'products' => $current_team->products()->latest()->get(),
+            'products' => $current_team->products()->latest()->paginate(20),
         ]);
     }
 
