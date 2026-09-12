@@ -70,3 +70,7 @@ Not present despite the longer-term PRD: a domain-oriented `app/Domain` structur
 ## For AI coding agents
 
 See `CLAUDE.md` (mirrored in `AGENTS.md`) for the codebase map, verification commands, and the full list of gaps between this repo and its target architecture.
+
+
+## Useful references
+- https://freedium-mirror.cfd/https://medium.com/@naoshad4k/laravel-multi-tenant-saas-architecture-database-isolation-security-scaling-decisions-2ff33ee7e9b5
